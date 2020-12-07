@@ -12,10 +12,12 @@ import plotly.graph_objs as go
 def load_cast_data():
   cast_path = "data/cast.csv"
   cast_name_path = "data/cast_id_name.csv"
+  rating_path = "data/movie_ratings.csv"
+  df_ratings = pd.read_csv(rating_path)
   df_casts = pd.read_csv(cast_path)
   cast_id_name = pd.read_csv(cast_name_path)
   cast_id_map = cast_id_name.set_index('cast_id')['name'].to_dict()
-  return df_casts, cast_id_map
+  return df_casts, df_ratings, cast_id_map
 
 @st.cache
 def load_director_data():
@@ -23,11 +25,34 @@ def load_director_data():
   df_director = pd.read_csv(director_path)
   return df_director
 
-def get_cast_pairs(topNmovie, topNactor):
+@st.cache
+def cast_pair_dictionary():
   cast_pairs = []
-  for movie_id in df_casts['movie_id'].unique()[:topNmovie]:
+  for movie_id in df_casts['movie_id'].unique():
     casts_in_movies = list(df_casts[df_casts['movie_id'] == movie_id]['cast_id'])
-    tups = list(itertools.combinations(casts_in_movies[:topNactor], 2))
+    tups = list(itertools.combinations(casts_in_movies[:3], 2))
+    cast_pairs.extend(tups)
+  graph = nx.Graph()
+  graph.add_edges_from(cast_pairs)
+  d = dict(nx.degree(graph))
+  return d
+
+def get_cast_pair_counter_edges(df_ratings, topNmovie):
+  cast_pairs = get_cast_pairs(df_ratings, topNmovie)
+
+  cast_counter = Counter(tuple(sorted(tup)) for tup in cast_pairs)
+
+  cast_keys = list(cast_counter.keys())
+  cast_values = list(cast_counter.values())
+  edges = [(cast_keys[i][0], cast_keys[i][1], cast_values[i]) for i in range(len(cast_counter))]
+  return cast_pairs, cast_counter, edges
+
+def get_cast_pairs(df_ratings, topNmovie):
+  cast_pairs = []
+  movie_list = df_ratings[df_ratings['count'] >= 1000].sort_values(by=['score'], ascending = False)['movieId'].to_list()
+  for movie_id in movie_list[:topNmovie]:
+    casts_in_movies = list(df_casts[df_casts['movie_id'] == movie_id]['cast_id'])
+    tups = list(itertools.combinations(casts_in_movies[:3], 2))
     cast_pairs.extend(tups)
   return cast_pairs
 
@@ -54,26 +79,26 @@ st.title("Movie")
 ###### Need: movie_id list to filter the data to display (Top N rated or Top N bestseller ?)
 ###### and storytelling
 
-layout_list = ['random', 'circular', 'kamada_kawai', 'multibipartite']
+layout_list = ['kamada_kawai', 'circular', 'random', 'multibipartite']
 
 st.markdown('We are going to analyze the connections between actors in top movies')
 
-topNmovie = st.slider('Top N movies', 10, 200, value=50)
+top_movie_list = [250, 200, 150, 100, 50]
 
-topNactor = st.slider('Top N actors', 1, 5, value=3)
+topNmovie = st.selectbox('Top N movies', top_movie_list)
+
+
+# topNmovie = st.slider('Top N movies', 10, 200, value=50)
+
 
 layout_option = st.selectbox('Network layout', layout_list)
 
 
-df_casts, cast_id_map = load_cast_data()
+df_casts, df_ratings, cast_id_map = load_cast_data()
 
-cast_pairs = get_cast_pairs(topNmovie, topNactor)
 
-cast_counter = Counter(tuple(sorted(tup)) for tup in cast_pairs)
+cast_pairs, cast_counter, edges = get_cast_pair_counter_edges(df_ratings, topNmovie)
 
-cast_keys = list(cast_counter.keys())
-cast_values = list(cast_counter.values())
-edges = [(cast_keys[i][0], cast_keys[i][1], cast_values[i]) for i in range(len(cast_counter))]
 
 
 G = nx.Graph()
@@ -150,7 +175,7 @@ df_director = load_director_data()
 
 directortopNmovie = st.slider('directors of top N movies', 100, 50000, value=10000)
 
-## to substitute by top voted id?
+### Top directors
 topmovies = df_director['movie_id'].unique()[:directortopNmovie]
 
 filtered_director = df_director[df_director['movie_id'].isin(topmovies)]
@@ -165,4 +190,40 @@ director_fig = go.Figure(go.Bar(
             orientation='h'))
 
 st.plotly_chart(director_fig)
+
+### Box plot of movie by the top connected actors
+
+st.markdown('We are going to analyze movie ratings of those top connected actors')
+
+d = cast_pair_dictionary()
+sort_connection_list = sorted(d.items(), key = lambda kv:(kv[1], kv[0]))
+top10connection = sort_connection_list[::-1][:10]
+
+top10cast = [t[0] for t in top10connection]
+
+df_connection = df_casts[df_casts['cast_id'].isin(top10cast)]
+df_connection_rating = df_connection.merge(df_ratings, left_on='movie_id', right_on='movieId')
+
+box_traces = []
+for i in range(len(top10cast)):
+    trace = {
+            "type": 'box',
+            "x": df_connection_rating[df_connection_rating['cast_id'] == top10cast[i]]['name'],
+            "y": df_connection_rating[df_connection_rating['cast_id'] == top10cast[i]]['score'],
+            "name": cast_id_map[top10cast[i]],
+
+        }
+    box_traces.append(trace)
+        
+box_connection_fig = {
+    "data": box_traces,
+    "layout" : {
+        "title": "Average Ratings of Top Connected Actors",
+            "xaxis" : dict(title = 'Actor', showticklabels=True),
+            "yaxis" : dict(title = 'Rating')
+    }
+}
+
+st.plotly_chart(box_connection_fig)
+
 

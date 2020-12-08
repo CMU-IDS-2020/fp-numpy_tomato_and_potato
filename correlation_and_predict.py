@@ -74,7 +74,7 @@ st.title("Movie")
 
 ###### Factor correlations
 st.header("Factor Correlations")
-st.write("In this part, we will make an overall analysis of the correlations between factors and rating.")
+st.write("In this part, we will make an overall analysis of the correlations between each factors, and the correlation between factors and rating. The measurement of correlation we are using is pearson correlation coefficient. Here is a factor corrlation heatmap you can play with and explore the correlations between different factors. For the categorical factors with many categories (casts, directors, genres), we only choose the most popular ones as examples.")
 one_hot_df = load_one_hot_data()
 one_hot_df = one_hot_df[one_hot_df.budget!=0]
 season_list = ['season_Spring','season_Summer','season_Fall','season_Winter']
@@ -101,7 +101,7 @@ director_list = ['director_Alfred Hitchcock',
                  'director_Woody Allen']
 genre_list = ['genre_Drama', 'genre_Comedy', 'genre_Thriller', 'genre_Romance', 'genre_Action', 'genre_Crime', 'genre_Horror']
 rating_list = ['imdb_rating']
-budget_list = ['budget','profit']
+budget_list = ['profit','budget']
 runtime_list = ['runtime']
 popularity_list = ['vote_count']
 release_year_list = ['release_year']
@@ -122,6 +122,8 @@ if "release year" in x_list:
     x_factors+=release_year_list
 if "popularity" in x_list:
     x_factors+=popularity_list
+if "season" in x_list:
+    x_factors+=season_list
 if "genre" in x_list:
     x_factors+=genre_list
 if "casts" in x_list:
@@ -145,6 +147,8 @@ if "release year" in y_list:
     y_factors+=release_year_list
 if "popularity" in y_list:
     y_factors+=popularity_list
+if "season" in y_list:
+    y_factors+=season_list
 if "genre" in y_list:
     y_factors+=genre_list
 if "casts" in y_list:
@@ -159,11 +163,14 @@ try:
     display_cov_heatmap(x_factors,y_factors,one_hot_df)
 except:
     st.write("Please select at least one factor for each axis from boxes above")
-#est_neigh = st.selectbox('Location', df_listing['neighbourhood_cleansed'].unique())
-#est_bed = st.selectbox('Number of Bedroom', df_listing['bedrooms'].unique())
-#st.write("And Y axis")
+
+st.write("Most of people believe that the budget, casts and directors should be strongly correlated to the rating of a movie. However, the data tells a different story. From the heatmap above, we can see that the rating is not strongly correlated to any of the factors. This shows that the rating of a movie is very complicated, and there's no decisive factor for a good movie. ")
+st.write("Disregard the fact that the absolute value of correlation is low between each factors and the rating, we can still see which factors are making positive/negative contribution to the ratings of movies. Surprisingly, the budget and release year both have negative impact on ratings (movie with less budget would have higher rating, and the older movies tend to have higher ratings.) Which might because people are tend to be nostalgia. Reguarding different genres, comedy is making a negative impact, while crime is making a positive impact. Also, we notice that some actors and directors also have positive impact to the rating of the movies.")
+st.write("Comparing to the ratings, the profit and popularity (number of vote) of movies are more strongly correlated to some of the factors which we believed would have a strong correlation with rating. For example, the budget, runtime, some famous directors/actors.")
+st.write("There are also some very interesting correlations between each factors. Of course Hitchcock is positively correlated to thriller movies, Quentin is positively correelated to crime movies, and Spielberg is positively correlated to Morgan Freeman. One finding very interesting for me is that action movie is positively correlated to Summer, which I never noticed before, but seems to be true according to my memory.  Play with the heatmap above and see what interesting fact you can find😄!")
 
 st.header("Movie Rating Prediction")
+st.write("At the end of this narrative, we provide you a chance to build your own machine learning model, and predict the rating of a movie of your choice! You can choose the features you want to use from all the features we mentioned previously. We will train a xgboost model for you on 90% of the data, and evaluate the model on the rest of the data. So you can know how your model performs! We will also provide you an analysis on which factor contributes the most to the prediction. The factor contributes the most is very likely the factor which affect the movies' rating the most.")
 prediction_df = one_hot_df.drop(['id','release_season','genres','cast','director','spoken_languages','profit','vote_count'],axis=1)
 
 # customized data
@@ -175,7 +182,7 @@ if len(customized_features)==0:
     st.write("Please select at least one feature to start the prediction")
 else:
     customized_dataset = pick_feature(prediction_df,customized_features)
-
+    st.write("The following is the importance of each features. The Y axis is the f score of the variable, which is the total number of time the model split on the factor. What factor is the most important one😊?")
     # train test split
     y = prediction_df['imdb_rating']
     x = customized_dataset
@@ -238,9 +245,10 @@ else:
     st.write("The mean absolute error of the prediction based on these features is: "+str(round(mean_absolute_error(y_predict,y_test),2)))
 
     if st.checkbox("I want to predict the rating for a new movie!"):
+        st.write("Now you have a chance to predict the rating of a new movie using the model you just trained! Be creative🎉, imagine Hitchcock directing a comedy, or Steven Spielberg working with Bruce Willis!")
         st.write("Please enter the data of the movie you want to predict:")
         input_list = {}
-        for f in other+categorical_feature:
+        for f in customized_features:
             if f in other:
                 user_input = ""
                 if f=="budget":
@@ -282,6 +290,6 @@ else:
         #prediction
         dsample = xgboost.DMatrix(sample.values, feature_names=sample.columns)
         output = model.predict(dsample)
-        st.write("The estimated rating of this movie is: "+str(output[0])+" !")
+        st.write("The estimated rating of this movie is: "+str(round(output[0],2))+" !")
 
 

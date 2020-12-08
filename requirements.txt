@@ -1,0 +1,14 @@
+streamlit
+scipy
+pandas
+altair
+seaborn
+pydeck
+networkx
+numpy
+plotly
+matplotlib
+cmake
+xgboost
+sklearn
+wordcloud

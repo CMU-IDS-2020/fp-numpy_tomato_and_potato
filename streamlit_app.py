@@ -7,6 +7,8 @@ import pydeck as pdk
 import networkx as nx
 import numpy as np
 import plotly.graph_objs as go
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
 
 @st.cache
 def load_cast_data():
@@ -22,6 +24,11 @@ def load_director_data():
   director_path = 'data/director.csv'
   df_director = pd.read_csv(director_path)
   return df_director
+
+@st.cache
+def load_keyword_data():
+  keyword_path = 'data/keyword_ratings.csv'
+  return pd.read_csv(keyword_path)
 
 def get_cast_pairs(topNmovie, topNactor):
   cast_pairs = []
@@ -166,3 +173,37 @@ director_fig = go.Figure(go.Bar(
 
 st.plotly_chart(director_fig)
 
+#################### keywords #####################
+keyword_df = load_keyword_data()
+rating_low, rating_high = st.slider('Select a range of ratings', 0.0, 10.0, (0.0, 10.0))
+
+n_film = len(keyword_df['movieId'].unique())
+n_keyword = len(keyword_df['keyword'].unique())
+agg_kwdf = keyword_df.groupby('keyword') \
+           .agg(count=('rating', 'size'))\
+           .reset_index()
+# filter keywords by film ratings
+filtered_kwdf = keyword_df[(keyword_df['rating'] >= rating_low) & (keyword_df['rating'] <= rating_high)]
+agg_filtered_kwdf = filtered_kwdf.groupby('keyword') \
+                .agg(count=('rating', 'size')) \
+                .reset_index()
+# count in filtered rating / count in all
+feature_kwdf = pd.merge(agg_filtered_kwdf, agg_kwdf, how='left', on=['keyword'])
+feature_kwdf['feature'] = feature_kwdf['count_x'] / n_keyword * np.log(n_film / (100*feature_kwdf['count_y']))
+# dict for wordcloud use
+kw2feature = dict(zip(feature_kwdf['keyword'],feature_kwdf['feature']))
+kw2count = dict(zip(agg_filtered_kwdf['keyword'],agg_filtered_kwdf['count']))
+# draw count
+wc = WordCloud(background_color="white", max_words=50)
+wc = wc.generate_from_frequencies(kw2count)
+fig, ax = plt.subplots(figsize=(20,10))
+ax.imshow(wc, interpolation='bilinear')
+ax.set_axis_off()
+st.pyplot(fig)
+# draw feature
+wc = WordCloud(background_color="white", max_words=50)
+wc = wc.generate_from_frequencies(kw2feature)
+fig, ax = plt.subplots(figsize=(20,10))
+ax.imshow(wc, interpolation='bilinear')
+ax.set_axis_off()
+st.pyplot(fig)

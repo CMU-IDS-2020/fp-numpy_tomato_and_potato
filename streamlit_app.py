@@ -78,7 +78,11 @@ st.title("Movie")
 
 layout_list = ['kamada_kawai', 'circular', 'random', 'multibipartite']
 
-st.markdown('We are going to analyze the connections between actors in top movies')
+st.markdown('An important factor that affects the quality of the movie is the actors. Great movies often come with great casts. We are going to explore the connections between actors in top movies.')
+
+st.markdown('From the top 250 rated movies with more than 1000 voters, we can see some famous actors stand out in the network graph, like Arnold Schwarzenegger, Matt Damon, and Chris Evans.')
+
+st.markdown('This indicates that the participation of great casts has been related to the success of the movie. Feel free to explore it with different top movies and different network layouts!')
 
 top_movie_list = [250, 200, 150, 100, 50]
 
@@ -165,8 +169,10 @@ cluster_fig = go.Figure(data=cluster_data, layout=cluster_layout)
 
 st.plotly_chart(cluster_fig)
 
-st.markdown('We are going to analyze directors of those top movies')
 
+st.markdown('In addition, movies\' success also attribute to the director, which is the key role of the whole production.')
+
+st.markdown('Of the top 10000 movies, we could see that Alfred Hitchcock, known as the "Master of Suspense", stands out for directing 52 of them. We can also see some prestigious name like Woody Allen, Robert Altman ... for making successful films.')
 
 df_director = load_director_data()
 
@@ -189,8 +195,6 @@ director_fig = go.Figure(go.Bar(
 st.plotly_chart(director_fig)
 
 ### Box plot of movie by the top connected actors
-
-st.markdown('We are going to analyze movie ratings of those top connected actors')
 
 d = cast_pair_dictionary()
 sort_connection_list = sorted(d.items(), key = lambda kv:(kv[1], kv[0]))
@@ -221,4 +225,5 @@ box_connection_fig = {
     }
 }
 
+st.markdown('As for the specific movies for those top connected actors, we could see that their ratings are above average and not that perfect. It indicates that great movies often come with great casts, but the participation of great actors cannot guarantee success.')
 st.plotly_chart(box_connection_fig)

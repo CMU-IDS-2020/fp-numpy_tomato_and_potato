@@ -212,11 +212,11 @@ def get_layout(layout_option, G):
         return nx.random_layout(G)
 
 
-st.title("Movie")
+st.title("What makes good movies?")
+
+st.write("Every one loves movies! From time to time, whenever you are happy or sad, movies are one of the best companies for you and me. Sometimes you met good movies which made you cry, other times you ran into bad movies which you couldn't finish. Data scientists like movies too! Based on the public data of about 45000 movies, we present this report on analyzing what makes the movies most people like, and we even build a model to predict the rating at the end. Enjoy the report!")
 
 ###### Factor correlations
-st.header("Factor Correlations")
-st.write("In this part, we will make an overall analysis of the correlations between each factors, and the correlation between factors and rating. The measurement of correlation we are using is pearson correlation coefficient. Here is a factor corrlation heatmap you can play with and explore the correlations between different factors. For the categorical factors with many categories (casts, directors, genres), we only choose the most popular ones as examples.")
 one_hot_df = load_one_hot_data()
 one_hot_df = one_hot_df[one_hot_df.budget!=0]
 season_list = ['season_Spring','season_Summer','season_Fall','season_Winter']
@@ -248,7 +248,9 @@ runtime_list = ['runtime']
 popularity_list = ['vote_count']
 release_year_list = ['release_year']
 
-st.header("Factor Correlation Heatmap")
+st.markdown("# Factor Correlations")
+st.write("In this part, we will make an overall analysis of the correlations between each factors, and the correlation between factors and rating. The measurement of correlation we are using is pearson correlation coefficient. Here is a factor corrlation heatmap you can play with and explore the correlations between different factors. For the categorical factors with many categories (casts, directors, genres), we only choose the most popular ones as examples.")
+
 st.write("Please feel free to change the factors on x and y axis")
 est_list = ["rating", "budget and profit", "runtime","release year","season","casts","directors","popularity","genre"]
 default_features = ["rating", "budget and profit", "runtime","release year","popularity"]
@@ -314,7 +316,7 @@ st.write("There are also some very interesting correlations between each factors
 
 ################################## factor ##################################
 
-st.markdown("# Explore the Genre's impact on the movie rating")
+st.markdown("# Which genres are your favorites?")
 st.write("By default, we provide the top 6 genres whose total movie number is the most. However, \
         there are 20 genres in total, we allow users to multi select the genres which they are interested in. \
         here, we mainly explore on the top 6 genres.")
@@ -353,7 +355,7 @@ st.write("All in all, it's obvious that the genre factor truly have an impact on
     are the highest rated, while horror movies are the lowest rated")
 
 
-st.markdown("# Explore the Movie Language's impact on the movie rating")
+st.markdown("# Beyond English")
 st.write("Similar to Genre, we also allow users to select the movie language by themselves, and we provide \
     English, French, Italian, German, Japanaese languages by default.")
 language_data = load_language_data()
@@ -393,7 +395,7 @@ st.write("Firstly, the violin plot validates our guessing that Japaneses movies 
 st.write("To conclude it, the orignal language of movies truly influence the rating of movies. Even if we do not \
     consider the English movies. We can still find that Japanese movies are the best and Italian movies are the worst.")
 
-st.markdown("# Explore the Movie Budget's impact on the movie rating")
+st.markdown("# Bigger Budgets?")
 st.write("Both language and genre are discrete variables, now we may focus more on continous variables, budget. Budget \
     is an interesting variables, naturally, we may think that higher budget should obtain higher revenue, however, \
     the rating score might be not high. Since it might sacrifice some culture value to appeal more people.")
@@ -440,7 +442,7 @@ st.write("We use boxplot to visualize the distributions in different budget grou
 
 st.write("Hence, we think that the budget will also influence the movie rating.")
 
-st.markdown("# Explore the Movie Runtime's impact on the movie rating")
+st.markdown("# Long Movies? Short Movies?")
 st.write("Runtime is similar to Budget factor, we will also use scatter plot to visualize and explore it.")
 runtime_data = load_runtime_data()
 runtime_rating = []
@@ -493,11 +495,12 @@ st.write("As a consequence, we can conclude that the runtime also make some diff
 
 layout_list = ['kamada_kawai', 'circular', 'random', 'multibipartite']
 
-st.markdown('An important factor that affects the quality of the movie is the actors. Great movies often come with great casts. We are going to explore the connections between actors in top movies.')
+st.markdown('# Directors and actos are making great movies!')
+st.write('An important factor that affects the quality of the movie is the actors. Great movies often come with great casts. We are going to explore the connections between actors in top movies.')
 
-st.markdown('From the top 250 rated movies with more than 1000 voters, we can see some famous actors stand out in the network graph, like Arnold Schwarzenegger, Matt Damon, and Chris Evans.')
+st.write('From the top 250 rated movies with more than 1000 voters, we can see some famous actors stand out in the network graph, like Arnold Schwarzenegger, Matt Damon, and Chris Evans.')
 
-st.markdown('This indicates that the participation of great casts has been related to the success of the movie. Feel free to explore it with different top movies and different network layouts!')
+st.write('This indicates that the participation of great casts has been related to the success of the movie. Feel free to explore it with different top movies and different network layouts!')
 
 top_movie_list = [250, 200, 150, 100, 50]
 
@@ -585,9 +588,9 @@ cluster_fig = go.Figure(data=cluster_data, layout=cluster_layout)
 st.plotly_chart(cluster_fig)
 
 
-st.markdown('In addition, movies\' success also attribute to the director, which is the key role of the whole production.')
+st.write('In addition, movies\' success also attribute to the director, which is the key role of the whole production.')
 
-st.markdown('Of the top 10000 movies, we could see that Alfred Hitchcock, known as the "Master of Suspense", stands out for directing 52 of them. We can also see some prestigious name like Woody Allen, Robert Altman ... for making successful films.')
+st.write('Of the top 10000 movies, we could see that Alfred Hitchcock, known as the "Master of Suspense", stands out for directing 52 of them. We can also see some prestigious name like Woody Allen, Robert Altman ... for making successful films.')
 
 df_director = load_director_data()
 
@@ -640,7 +643,7 @@ box_connection_fig = {
     }
 }
 
-st.markdown('As for the specific movies for those top connected actors, we could see that their ratings are above average and not that perfect. It indicates that great movies often come with great casts, but the participation of great actors cannot guarantee success.')
+st.write('As for the specific movies for those top connected actors, we could see that their ratings are above average and not that perfect. It indicates that great movies often come with great casts, but the participation of great actors cannot guarantee success.')
 st.plotly_chart(box_connection_fig)
 
 
@@ -690,7 +693,7 @@ st.write("From this graph, we can see that \"shark\", \"dinosaur\", \"erotic mov
 
 
 ######################### prediction ###########################
-st.header("Movie Rating Prediction")
+st.markdown("# Let's Predict")
 st.write("At the end of this narrative, we provide you a chance to build your own machine learning model, and predict the rating of a movie of your choice! You can choose the features you want to use from all the features we mentioned previously. We will train a xgboost model for you on 90% of the data, and evaluate the model on the rest of the data. So you can know how your model performs! We will also provide you an analysis on which factor contributes the most to the prediction. The factor contributes the most is very likely the factor which affect the movies' rating the most.")
 prediction_df = one_hot_df.drop(['id','release_season','genres','cast','director','spoken_languages','profit','vote_count'],axis=1)
 

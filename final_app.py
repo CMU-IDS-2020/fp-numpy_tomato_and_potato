@@ -165,7 +165,7 @@ def draw_wc(frequency):
     ax.set_axis_off()
     st.pyplot(fig)
 
-
+@st.cache
 def cast_pair_dictionary():
     cast_pairs = []
     for movie_id in df_casts['movie_id'].unique():
@@ -177,7 +177,7 @@ def cast_pair_dictionary():
     d = dict(nx.degree(graph))
     return d
 
-
+@st.cache
 def get_cast_pair_counter_edges(df_ratings, topNmovie):
     cast_pairs = get_cast_pairs(df_ratings, topNmovie)
 
@@ -188,7 +188,7 @@ def get_cast_pair_counter_edges(df_ratings, topNmovie):
     edges = [(cast_keys[i][0], cast_keys[i][1], cast_values[i]) for i in range(len(cast_counter))]
     return cast_pairs, cast_counter, edges
 
-
+@st.cache
 def get_cast_pairs(df_ratings, topNmovie):
     cast_pairs = []
     movie_list = df_ratings[df_ratings['count'] >= 1000].sort_values(by=['score'], ascending = False)['movieId'].to_list()
@@ -198,7 +198,7 @@ def get_cast_pairs(df_ratings, topNmovie):
         cast_pairs.extend(tups)
     return cast_pairs
 
-
+@st.cache
 def get_layout(layout_option, G):
     if layout_option == 'random':
         return nx.random_layout(G)
@@ -206,8 +206,8 @@ def get_layout(layout_option, G):
         return nx.circular_layout(G)
     elif layout_option == 'kamada_kawai':
         return nx.kamada_kawai_layout(G)
-    elif layout_option == 'mulitbipartite':
-        return nx.mulitbipartite_layout(G)
+    elif layout_option == 'mulitpartite':
+        return nx.multipartite_layout(G)
     else:
         return nx.random_layout(G)
 
@@ -517,7 +517,6 @@ df_casts, df_ratings, cast_id_map = load_cast_data()
 
 
 cast_pairs, cast_counter, edges = get_cast_pair_counter_edges(df_ratings, topNmovie)
-
 
 
 G = nx.Graph()

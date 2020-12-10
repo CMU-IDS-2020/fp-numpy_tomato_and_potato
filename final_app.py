@@ -1,4 +1,5 @@
 import json
+import time
 import itertools
 from collections import Counter
 import numpy as np
@@ -127,16 +128,11 @@ def filter_genre_by_level(genre_dict, threshold):
     
     return filter_genres
 
-
+@st.cache
 def cast_pair_dictionary(df_casts):
-    cast_pairs = []
-    for movie_id in df_casts['movie_id'].unique():
-        casts_in_movies = list(df_casts[df_casts['movie_id'] == movie_id]['cast_id'])
-        tups = list(itertools.combinations(casts_in_movies[:3], 2))
-        cast_pairs.extend(tups)
-    graph = nx.Graph()
-    graph.add_edges_from(cast_pairs)
-    d = dict(nx.degree(graph))
+    with open("data/cast_pair.json", 'r') as f:
+        d = json.load(f)
+    d = {int(k):int(v) for k,v in d.items()}
     return d
 
 
@@ -171,7 +167,6 @@ def get_cast_pair_counter_edges(df_ratings, topNmovie):
     cast_values = list(cast_counter.values())
     edges = [(cast_keys[i][0], cast_keys[i][1], cast_values[i]) for i in range(len(cast_counter))]
     return cast_pairs, cast_counter, edges
-
 
 st.title("What makes good movies?")
 
@@ -642,8 +637,8 @@ def draw_actor_fig(df_casts, cast_id_map):
 st.write('As for the specific movies for those top connected actors, we could see that their ratings are above average and not that perfect. It indicates that great movies often come with great casts, but the participation of great actors cannot guarantee success.')
 
 box_connection_fig = draw_actor_fig(df_casts, cast_id_map)
-st.plotly_chart(box_connection_fig)
 
+st.plotly_chart(box_connection_fig)
 
 
 ######################## keywords ##################3######
@@ -735,7 +730,6 @@ ax.set_axis_off()
 st.pyplot(fig)
 
 st.write("From this graph, we can see that \"shark\", \"dinosaur\", \"erotic movie\" are more likely to appear in low-rate movies. Also, there are some other keywords like \"horror\", \"alien invasion\". These keywords are fascinating to the audience at the first place and we are often tempted to watch some of them. However, it is showed these movies are more likely to be low-rate movies and are not accepted by the crowd. Though there are good horror or shark movies, more movies of these types are unpleasant to watch. Usually, these movies use these keywords to lure audience to go into the cinema, but the contents of these movies are bad.")
-
 
 
 ######################### prediction ###########################

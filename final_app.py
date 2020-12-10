@@ -731,9 +731,11 @@ st.pyplot(fig)
 
 st.write("From this graph, we can see that \"shark\", \"dinosaur\", \"erotic movie\" are more likely to appear in low-rate movies. Also, there are some other keywords like \"horror\", \"alien invasion\". These keywords are fascinating to the audience at the first place and we are often tempted to watch some of them. However, it is showed these movies are more likely to be low-rate movies and are not accepted by the crowd. Though there are good horror or shark movies, more movies of these types are unpleasant to watch. Usually, these movies use these keywords to lure audience to go into the cinema, but the contents of these movies are bad.")
 
+st.markdown("# Conclusion")
+st.write("From all the analyses above, we proved that there are several factors - genre, language, budget, runtime, directors/actors, and keywords - which can affect a movie's rating to some extend. However, there seems no decisive factor for a good movie. For example, the great directors can direct some terrible movies, and there are also some great movies with very low budget. A movie's rating may be affected by many different factors or a complicated combination of various factors (though horror movie tends to have a lower rating, horror movie + Hitchcock seems to be a promising pair for a great movie). A movie's rating can also be affected by more complicated factors like the evolution of aesthetic values over time. These are some aspects we can dig deeper into and study in future works.")
 
 ######################### prediction ###########################
-st.markdown("# Let's Predict")
+st.markdown("# In the End - Let's Predict!")
 st.write("At the end of this narrative, we provide you a chance to build your own machine learning model and predict the rating of a movie of your choice! You can choose the features you want to use from all the features we mentioned previously. We will train an xgboost model for you on 90% of the data and evaluate the model on the rest of the data. So you can know how your model performs! We will also provide you an analysis of which factor contributes the most to the prediction. The factor that contributes the most is very likely the factor that affect the movies' rating the most.")
 prediction_df = one_hot_df.drop(['id','release_season','genres','cast','director','spoken_languages','profit','vote_count'],axis=1)
 

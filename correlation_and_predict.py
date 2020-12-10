@@ -35,14 +35,17 @@ def cast_pair_dictionary():
   d = dict(nx.degree(graph))
   return d
 
-def get_cov_matrix(feature_list_1, feature_list_2,df):
+@st.cache
+def get_cov_matrix(feature_list_1, feature_list_2):
+    one_hot_df = load_one_hot_data()
+    one_hot_df = one_hot_df[one_hot_df.budget!=0]
     cov_matrix = []
     x_list = feature_list_1
     y_list = feature_list_2
     for x in x_list:
         curr_list = []
         for y in y_list:
-            cor,_ = pearsonr(df[x],df[y])
+            cor,_ = pearsonr(one_hot_df[x],one_hot_df[y])
             curr_list.append(round(cor,2))
         cov_matrix.append(curr_list)
     return cov_matrix
@@ -110,57 +113,87 @@ st.header("Factor Correlation Heatmap")
 st.write("Please feel free to change the factors on x and y axis")
 est_list = ["rating", "budget and profit", "runtime","release year","season","casts","directors","popularity","genre"]
 default_features = ["rating", "budget and profit", "runtime","release year","popularity"]
+
 x_list = st.multiselect('y axis', est_list, default = default_features)
-x_factors = []
-if "rating" in x_list:
-    x_factors+=rating_list
-if "budget and profit" in x_list:
-    x_factors+=budget_list
-if "runtime" in x_list:
-    x_factors+=runtime_list
-if "release year" in x_list:
-    x_factors+=release_year_list
-if "popularity" in x_list:
-    x_factors+=popularity_list
-if "season" in x_list:
-    x_factors+=season_list
-if "genre" in x_list:
-    x_factors+=genre_list
+x_actors = None
+x_directors = None
 if "casts" in x_list:
     default_casts = ['cast_Brad Pitt', 'cast_Nicolas Cage', 'cast_Morgan Freeman']
     x_actors = st.multiselect('actors', casts_list, default = default_casts, key=0)
-    x_factors+=x_actors
 if "directors" in x_list:
     default_directors = ['director_Alfred Hitchcock', 'director_Steven Spielberg', 'director_Quentin Tarantino']
     x_directors = st.multiselect('directors', director_list, default = default_directors, key=1)
-    x_factors+=x_directors
-#st.write(x_factors)
+
+@st.cache
+def get_x_factors(x_list, x_actors, x_directors):
+    x_factors = []
+    if "rating" in x_list:
+        x_factors+=rating_list
+    if "budget and profit" in x_list:
+        x_factors+=budget_list
+    if "runtime" in x_list:
+        x_factors+=runtime_list
+    if "release year" in x_list:
+        x_factors+=release_year_list
+    if "popularity" in x_list:
+        x_factors+=popularity_list
+    if "season" in x_list:
+        x_factors+=season_list
+    if "genre" in x_list:
+        x_factors+=genre_list
+    if x_actors != None:
+        x_factors+=x_actors
+    if x_directors != None:
+        x_factors+=x_directors
+    return x_factors
+
 y_list = st.multiselect('x axis', est_list, default = default_features)
-y_factors = []
-if "rating" in y_list:
-    y_factors+=rating_list
-if "budget and profit" in y_list:
-    y_factors+=budget_list
-if "runtime" in y_list:
-    y_factors+=runtime_list
-if "release year" in y_list:
-    y_factors+=release_year_list
-if "popularity" in y_list:
-    y_factors+=popularity_list
-if "season" in y_list:
-    y_factors+=season_list
-if "genre" in y_list:
-    y_factors+=genre_list
+y_actors = None
+y_directors = None
 if "casts" in y_list:
     default_casts = ['cast_Brad Pitt', 'cast_Nicolas Cage', 'cast_Morgan Freeman']
     y_actors = st.multiselect('actors', casts_list, default = default_casts, key=2)
-    y_factors+=y_actors
 if "directors" in y_list:
     default_directors = ['director_Alfred Hitchcock', 'director_Steven Spielberg', 'director_Quentin Tarantino']
     y_directors = st.multiselect('directors', director_list, default = default_directors, key=3)
-    y_factors+=y_directors
+
+@st.cache
+def get_y_factors(y_list, y_actors, y_directors):
+    y_factors = []
+    if "rating" in y_list:
+        y_factors+=rating_list
+    if "budget and profit" in y_list:
+        y_factors+=budget_list
+    if "runtime" in y_list:
+        y_factors+=runtime_list
+    if "release year" in y_list:
+        y_factors+=release_year_list
+    if "popularity" in y_list:
+        y_factors+=popularity_list
+    if "season" in y_list:
+        y_factors+=season_list
+    if "genre" in y_list:
+        y_factors+=genre_list
+    if y_actors != None:
+        y_factors+=y_actors
+    if y_directors != None:
+        y_factors+=y_directors
+    return y_factors
+
+feature_list_1 = get_x_factors(x_list, x_actors, x_directors)
+feature_list_2 = get_y_factors(y_list, y_actors, y_directors)
+
 try:
-    display_cov_heatmap(x_factors,y_factors,one_hot_df)
+    cov_mat = get_cov_matrix(feature_list_1, feature_list_2)
+    fig = plt.figure()
+    if max(max(cov_mat))==1:
+        ax = sns.heatmap(cov_mat, vmin=(min(min(cov_mat))+1)/2, vmax=-(min(min(cov_mat))+1)/2, linewidths=.5, annot=True, cmap="YlGnBu",
+                            xticklabels=feature_list_2, yticklabels=feature_list_1)
+        st.pyplot(fig)
+    else:
+        ax = sns.heatmap(cov_mat, linewidths=.5, annot=True, cmap="YlGnBu",
+                            xticklabels=feature_list_2, yticklabels=feature_list_1, center=0)
+        st.pyplot(fig)
 except:
     st.write("Please select at least one factor for each axis from boxes above")
 

@@ -30,19 +30,6 @@ def load_one_hot_data():
 
 
 @st.cache
-def cast_pair_dictionary():
-    cast_pairs = []
-    for movie_id in df_casts['movie_id'].unique():
-        casts_in_movies = list(df_casts[df_casts['movie_id'] == movie_id]['cast_id'])
-        tups = list(itertools.combinations(casts_in_movies[:3], 2))
-        cast_pairs.extend(tups)
-    graph = nx.Graph()
-    graph.add_edges_from(cast_pairs)
-    d = dict(nx.degree(graph))
-    return d
-
-
-@st.cache
 def load_genre_data():
     with open("data/genre_movie.json", 'r') as f:
         new_genre = json.load(f)

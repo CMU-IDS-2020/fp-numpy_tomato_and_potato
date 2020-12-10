@@ -192,15 +192,15 @@ def get_layout(layout_option, G):
         return nx.circular_layout(G)
     elif layout_option == 'kamada_kawai':
         return nx.kamada_kawai_layout(G)
-    elif layout_option == 'mulitpartite':
-        return nx.multipartite_layout(G)
+#    elif layout_option == 'mulitpartite':
+#        return nx.multipartite_layout(G)
     else:
         return nx.random_layout(G)
 
 
 st.title("What makes good movies?")
 
-st.write("Every one loves movies! From time to time, whenever you are happy or sad, movies are one of the best companies for you and me. Sometimes you met good movies which made you cry, other times you ran into bad movies which you couldn't finish. Data scientists like movies too! Based on the public data of about 45000 movies, we present this report on analyzing what makes the movies most people like, and we even build a model to predict the rating at the end. Enjoy the report!")
+st.write("Everyone loves movies! From time to time, whenever you are happy or sad, movies are one of the best companies for you and me. Sometimes you met good movies that made you cry; other times, you ran into bad movies you couldn't finish. Data scientists like movies too! Based on about 45000 movies' public data, we present this report on analyzing what makes the movies most people like, and we even build a model to predict the rating at the end. Enjoy the report!")
 
 ###### Factor correlations
 one_hot_df = load_one_hot_data()
@@ -235,9 +235,9 @@ popularity_list = ['vote_count']
 release_year_list = ['release_year']
 
 st.markdown("# Factor Correlations")
-st.write("In this part, we will make an overall analysis of the correlations between each factors, and the correlation between factors and rating. The measurement of correlation we are using is pearson correlation coefficient. Here is a factor corrlation heatmap you can play with and explore the correlations between different factors. For the categorical factors with many categories (casts, directors, genres), we only choose the most popular ones as examples.")
+st.write("In this part, we will make an overall analysis of the correlations between each factor and the correlation between factors and rating. The measurement of correlation we are using is the pearson correlation coefficient. Here is a factor correlation heatmap you can play with and explore the correlations between different factors. For categorical factors with many categories (casts, directors, genres), we only choose some of the most popular ones as examples due to the limit of visualization size.")
 
-st.write("Please feel free to change the factors on x and y axis")
+st.write("Please feel free to change the factors on the x and y axis.")
 est_list = ["rating", "budget and profit", "runtime","release year","season","casts","directors","popularity","genre"]
 default_features = ["rating", "budget and profit", "runtime","release year","popularity"]
 x_list = st.multiselect('y axis', est_list, default = default_features)
@@ -294,18 +294,16 @@ try:
 except:
     st.write("Please select at least one factor for each axis from boxes above")
 
-st.write("Most of people believe that the budget, casts and directors should be strongly correlated to the rating of a movie. However, the data tells a different story. From the heatmap above, we can see that the rating is not strongly correlated to any of the factors. This shows that the rating of a movie is very complicated, and there's no decisive factor for a good movie. ")
-st.write("Disregard the fact that the absolute value of correlation is low between each factors and the rating, we can still see which factors are making positive/negative contribution to the ratings of movies. Surprisingly, the budget and release year both have negative impact on ratings (movie with less budget would have higher rating, and the older movies tend to have higher ratings.) Which might because people are tend to be nostalgia. Reguarding different genres, comedy is making a negative impact, while crime is making a positive impact. Also, we notice that some actors and directors also have positive impact to the rating of the movies.")
-st.write("Comparing to the ratings, the profit and popularity (number of vote) of movies are more strongly correlated to some of the factors which we believed would have a strong correlation with rating. For example, the budget, runtime, some famous directors/actors.")
-st.write("There are also some very interesting correlations between each factors. Of course Hitchcock is positively correlated to thriller movies, Quentin is positively correelated to crime movies, and Spielberg is positively correlated to Morgan Freeman. One finding very interesting for me is that action movie is positively correlated to Summer, which I never noticed before, but seems to be true according to my memory.  Play with the heatmap above and see what interesting fact you can find😄!")
-
+st.write("Most people believe that the budget, cast, and directors should be strongly correlated to a movie's rating. However, the data tells a different story. From the heatmap above, we can see that the rating is not strongly correlated to any factors. This fact shows that the movie's rating is very complicated, and there's no decisive factor for a good movie. ")
+st.write("Disregard the fact that the absolute value of correlation is low between each factor and the rating, we can still see which factors are making positive/negative contributions to the ratings of movies. Surprisingly, the release year negatively impact ratings (the older movies tend to have higher ratings.) This might because people tend to be nostalgic. Different genres would also impact the ratings. For example, comedy is making a negative impact, while crime is making a positive impact. Also, we notice that some actors and directors also positively impact the rating of the movies.")
+st.write("Compared to the ratings, the profit and popularity (number of votes) of movies are more strongly correlated to some of the factors we believed would strongly correlate with the rating. For example, the budget, runtime, some famous directors/actors.")
+st.write("There are also some very interesting correlations between each factor. Of course, Hitchcock is positively correlated to thriller movies, Quentin is positively correlated to crime movies, and Spielberg is positively correlated to Morgan Freeman. One interesting thing for me is that action movies are positively correlated to Summer, which I never noticed before, but seems to be true according to my memory. Play with the heatmap above and see what interesting facts you can find😄!")
+st.write("In the next several paragraphs, we will provide detailed analyses of how each factor affects movie ratings.")
 
 ################################## factor ##################################
 
 st.markdown("# Which genres are your favorites?")
-st.write("By default, we provide the top 6 genres whose total movie number is the most. However, \
-        there are 20 genres in total, we allow users to multi select the genres which they are interested in. \
-        here, we mainly explore on the top 6 genres.")
+st.write("By default, we provide the top 6 genres whose total movie number is the most. However, there are 20 genres in total, and we allow you to multi-select the genres you are interested in. Here, we mainly explore the top 6 genres.")
         
 genre_data = load_genre_data()
 imdb_rating = load_movie_imdb()
@@ -320,30 +318,20 @@ for genre in selected_genres:
                        xbins = dict(start = 0.0, end = 10.0, size = 0.2)))
 hist_fig.update_layout(barmode='stack', xaxis_title_text='Rating', yaxis_title_text='Number')
 st.plotly_chart(hist_fig, use_container_width=True)
-st.write("As you can see from the histgram, firstly, most of the genres are rated between 6 and 8, \
-    and it seems like drama and comedy are the most in this range (6.0~8.0). However, this doesn't \
-    mean that the drama and comedy are more likely to get higher score. To explore the genre's \
-    factors deeper, we plot violin figure to visualize each genre's rating distribution.")
+st.write("As you can see from the histogram, most of the genres are rated between 6 and 8. However, from this histogram, we can't tell which genres tend to get a higher score. To explore the genre's factors deeper, we plot violin figures to visualize each genre's rating distribution.")
 
 violin_fig = go.Figure()
 for genre in selected_genres:
     violin_fig.add_trace(go.Violin(y=genre_rating[genre], box_visible = True, 
                     meanline_visible=True, name=genre))
 st.plotly_chart(violin_fig)
-st.write("According to violin plot, we can find that drama is still the highest rated genre, since its \
-    distribution is higher than other genres. Also, the median and max score for drama are also the highest\
-    . And comedy movies, althought it seems to be highly rated from the histgram, the actual distribution \
-    implies that Comedy is not highly rated in fact. Another interesting fact is that the Horror movie's \
-    rarting is the lowest. The Horror movie's median score is 5.4, far less than other genres and the overall \
-    distribution is lower also.")
+st.write("According to the violin plots, drama is the highest-rated genre since its distribution is higher than the distribution of other genres. The median and max score for drama are also the highest.  Another interesting fact is that the Horror movie's rating is the lowest. The Horror movie's median score is 5.4, far less than other genres, and the overall distribution is also lower.")
 
-st.write("All in all, it's obvious that the genre factor truly have an impact on the movie rating, and Drama \
-    are the highest rated, while horror movies are the lowest rated")
+st.write("All in all, it's obvious that the genre factor truly has an impact on the movie rating, and drama is the highest-rated, while horror movies are the lowest rated.")
 
 
 st.markdown("# Beyond English")
-st.write("Similar to Genre, we also allow users to select the movie language by themselves, and we provide \
-    English, French, Italian, German, Japanaese languages by default.")
+st.write("Similar to Genre, we also allow users to select the movie language by themselves, and we provide English, French, Italian, German, and Japanese languages by default.")
 language_data = load_language_data()
 language_rating = transform_id_to_rating(language_data.keys(), language_data)
 first_level_languages = filter_genre_by_level(language_data, _language_level)
@@ -357,12 +345,7 @@ for language in selected_languages:
 language_hist_fig.update_layout(barmode = 'stack', xaxis_title_text='Rating', yaxis_title_text='Number')
 st.plotly_chart(language_hist_fig, use_container_width=True)
 
-st.write("Obviously, the English language movie has the largest number, however, the its distribution is \
-    slightly lower than others (left in the Histgram figure). Also, we find that most of the movies are \
-    rated between 6.0 and 8.0, this is consistent with previous genre's result. If you remove the English \
-    movies and keep the rest default movies, you can find an interesting pehnomenon, the Japaneses movies \
-    seem to have higher rating compared with other movies. To reduce the movies number's factor, and pay more \
-    attention on the distribution, we plot the violin figure also.")
+st.write("In the diagram, we can see that the English language movie has the largest number. However, English movies' distribution is slightly lower than others (left in the Histogram figure). Also, we find that most of the movies are rated between 6.0 and 8.0. This is consistent with the previous genre's result. If you remove the English movies and keep the rest default movies, you can find an interesting phenomenon: the Japanese movies seem to have higher ratings than other movies. To reduce the movie number's factor and pay more attention to the distribution, we also plot the violin figure.")
 
 language_violin_fig = go.Figure()
 for language in selected_languages:
@@ -370,21 +353,12 @@ for language in selected_languages:
                             meanline_visible=True, name=language))
 st.plotly_chart(language_violin_fig)
 
-st.write("Firstly, the violin plot validates our guessing that Japaneses movies are normally higher rated. Both \
-    the entire distribution and mathematical statistics (median, mean) imply it. Secondly, we find that although \
-    English movies number is far higher than other language movies, the overall rating is actually lower than \
-    others. The reason might be that this dataset are collected in the USA, hence the foreign language movies are \
-    more likely to be high-rated, the low-rated language movies may not be imported in the U.S actually. Thirdly, \
-    we can conclude that Italian movies don't perform well also, the overall distribution is lower and there are \
-    more low-rating Italian movies.")
+st.write("Firstly, the violin plot validates our guessing that Japanese movies usually are higher rated. Both the entire distribution and mathematical statistics (median, mean) imply it. Secondly, although the number of English movies is far higher than other language movies, the overall rating is lower than others. The reason might be that this dataset is collected in the USA; hence the foreign language movies are more likely to be high-rated, the low-rated language movies may not be imported to the U.S. Thirdly, we can conclude that Italian movies also don't perform well, the overall distribution is lower, and there are more low-rating Italian movies.")
 
-st.write("To conclude it, the orignal language of movies truly influence the rating of movies. Even if we do not \
-    consider the English movies. We can still find that Japanese movies are the best and Italian movies are the worst.")
+st.write("To conclude, the original language of movies truly influences the rating of movies. Even if we do not consider English movies, we can still find that Japanese movies are the best and Italian movies are the worst.")
 
 st.markdown("# Bigger Budgets?")
-st.write("Both language and genre are discrete variables, now we may focus more on continous variables, budget. Budget \
-    is an interesting variables, naturally, we may think that higher budget should obtain higher revenue, however, \
-    the rating score might be not high. Since it might sacrifice some culture value to appeal more people.")
+st.write("Both language and genre are discrete variables, and now we may focus more on continuous variables. Budget is an interesting variable. Naturally, we may think that a higher budget should obtain higher revenue while it might not increase the rating score since it might sacrifice some cultural value to appeal to more people.")
 budget_data = load_budget_data()
 budget_rating = []
 for budget, movie_list in budget_data.items():
@@ -395,13 +369,7 @@ budget_df = pd.DataFrame(budget_rating, columns=["budget", "rating"])
 budget_figure = px.scatter(budget_df, x="budget", y="rating")
 budget_figure.update_layout(xaxis_title_text='Budget', yaxis_title_text='Rating')
 st.plotly_chart(budget_figure)
-st.write("We first use scatter plot to visualize the rough distribution. The X-axis is budget and Y-axis is rating. \
-    The figure implies that there exist some relation between budget and rating. For example, we find that low budget \
-    movies distribute from 0.0 to 10.0, which means there are not only some good movies but also bad movies with low \
-    budget. Then, with the budget increasing, we find that bad movies (with low-rating score) decrease a lot. This implies \
-    that, high budget movies will not be low-rated at least. To validate my guessing, I divide the budget into multiple groups \
-    0~50M dollars, 50M~100M dollars, 100M~200M dollars, >200M dollars. Then, we can see the distribution in different budget \
-    group.")
+st.write("We first use a scatter plot to visualize the overall distribution. The X-axis is budget, and Y-axis is rating. The figure implies that there exists some relationship between budget and rating. For example, we find that low budget movies distribute from 0.0 to 10.0, which means there are both good movies and some terrible movies with low budget. With the budget increasing, we find that the number of bad movies (with low-rating score) decreases a lot. This finding implies that high budget movies will not be low-rated, at least. To validate my guess, I divide the budget into multiple groups 0~50M dollars, 50M~100M dollars, 100M~200M dollars, >200M dollars. Then, we can see the distribution in the different budget groups.")
 
 budget_bucket_rating = {"<50M":[], "50M~100M":[], "100M~200M":[], ">200M":[]}
 for budget, movie_list in budget_data.items():
@@ -421,15 +389,12 @@ budget_bucket_figure = go.Figure()
 for budget_key in budget_bucket_rating:
     budget_bucket_figure.add_trace(go.Box(y=budget_bucket_rating[budget_key], name=budget_key))
 st.plotly_chart(budget_bucket_figure)
-st.write("We use boxplot to visualize the distributions in different budget group. Based on the figure, it's true that high budget \
-    movies's rating distribution is overall higher than other distritbutions. This implies that if you pay more, even if you cannot \
-    get the higest rating, you will not obtain too bad result. Also, we find that the highest rated movies lie in 100M~200M group \
-    this is consistent with our common sense, that the medium-budget movies can be high rated.")
+st.write("We use boxplots to visualize the distributions in different budget groups. Based on the figure, it's true that high budget movies' rating distribution is overall higher than the distributions of lower-budget movies. This finding implies that if you pay more, even if you might not get the highest rating, you will not obtain a too bad result. Also, we find that the highest rated movies lie in the 100M~200M group this is consistent with our common sense that medium-budget movies can be highly rated.")
 
 st.write("Hence, we think that the budget will also influence the movie rating.")
 
 st.markdown("# Long Movies? Short Movies?")
-st.write("Runtime is similar to Budget factor, we will also use scatter plot to visualize and explore it.")
+st.write("Runtime is similar to Budget factor, to make an overview correlation between runtime and rating, we use a scatter plot to visualize and explore it.")
 runtime_data = load_runtime_data()
 runtime_rating = []
 for runtime, movie_list in runtime_data.items():
@@ -439,11 +404,7 @@ runtime_df = pd.DataFrame(runtime_rating, columns=["runtime", "rating"])
 runtime_figure = px.scatter(runtime_df, x="runtime", y="rating")
 runtime_figure.update_layout(xaxis_title_text='Runtime', yaxis_title_text='Rating')
 st.plotly_chart(runtime_figure)
-st.write("From the runtime scatter plot, we can conclude that the movies with runtime > 400 are usually high rated. I think  \
-    it might because that these movies are documentary, hence they are rated high. Also, some short movies with runtime < 50 \
-    are also high rated. These movies might be the micro-movies, which are invariably highly rated also. Overall, we conclude \
-    that there exists an trending that the movies with higher runtime might get higher score. To validate our guessing, we plot \
-    boxplot figure also.")
+st.write("We can conclude that the movies with runtime > 400 are usually highly rated from the runtime scatter plot, which might because these movies are documentaries, and documentaries are often rated high. Also, some short movies with runtime < 50 are also highly rated. These movies might be the micro-movies, which are also invariably highly rated. Overall, we conclude that there exists a trend that the movies with higher runtime might get higher scores. To validate our guessing, we plot some boxplot figures.")
 
 runtime_bucket_rating = {"<60 min":[], "60~90 min":[], "90~150 min":[],"150~240 min":[], ">240 min":[]}
 for runtime, movie_list in runtime_data.items():
@@ -465,11 +426,8 @@ runtime_bucket_figure = go.Figure()
 for runtime_key in runtime_bucket_rating:
     runtime_bucket_figure.add_trace(go.Box(y=runtime_bucket_rating[runtime_key], name=runtime_key))
 st.plotly_chart(runtime_bucket_figure)
-st.write("The boxplot figure validates our guess. The movies whose runtime are between 60 and 150 minutes performs the worst, \
-    and the micro-movies (with runtime < 60 mins) performs better. From the second group (60~90) to the fifth group (>240 min), \
-    the distribution becomes gradually higher.")
-st.write("As a consequence, we can conclude that the runtime also make some difference on the final rating, longer movies tend \
-    to get higher rating score, except for too-short movies, which also get high scores.")
+st.write("The boxplot figure validates our guess. The movies whose runtime is between 60 and 150 minutes perform the worst, and the micro-movies (with runtime < 60 mins) perform better. From the second group (60~90) to the fifth group (>240 min), the distribution becomes gradually higher.")
+st.write("As a consequence, we can conclude that the runtime also makes some difference in the final rating. Longer movies tend to get higher rating scores, except for too-short movies, which also get high scores.")
 
 
 
@@ -695,7 +653,7 @@ st.write("# What are good keywords?")
 
 st.write("In this part, we explore the keywords of different movies by using word cloud graph. Keywords are an important part of movies as search engine uses them to generate search results. Good keywords help movies to be found by viewers who are interested in related genres, subjects, etc. Besides, keywords is one of the ways to leave first impressions on viewers, usually keywords involve the most important and distinct things of a movie. So it's important for us to know more about the keywords and how they affect the ratings of movies.")
 
-st.write("We use world cloud as the visualization tool as we explore the influence of keywords. We first examine what keywords are most common among all movies. This will give us an insight on what keywords are popular and what keywords are rare. In the following word cloud graph are the most popular keywords, where the size of word represents the frequency of that keyword used among all movies in our dataset.")
+st.write("We use world cloud as the visualization tool as we explore the influence of keywords. We first examine what keywords are most common among all movies. This will give us an insight into what keywords are popular and what keywords are rare. In the following word cloud graph are the most popular keywords, where the size of the word represents the frequency of that keyword used among all movies in our dataset.")
 
 wc = draw_wc_all(keyword_df)
 fig, ax = plt.subplots(figsize=(20,10))
@@ -721,13 +679,13 @@ ax.imshow(wc, interpolation='bilinear')
 ax.set_axis_off()
 st.pyplot(fig)
 
-st.write("From this graph, we can see that \"shark\", \"dinosaur\", \"erotic movie\" are more likely to apper in low-rate movies. Also there are some other keywords like \"horror\", \"alien invasion\". These keywords are fascinating to audience at the first place and we are often tempted to watch some of them. However, it is showed these movies are more likely to be low-rate movies and are not acceppted by the crowd. Though there are good horror or shark movies, more movies of these types are unpleasant to watch. Usually these movies use these keywords to lure audience to go into the cinema but the contents of these movies are bad.")
+st.write("From this graph, we can see that \"shark\", \"dinosaur\", \"erotic movie\" are more likely to appear in low-rate movies. Also, there are some other keywords like \"horror\", \"alien invasion\". These keywords are fascinating to the audience at the first place and we are often tempted to watch some of them. However, it is showed these movies are more likely to be low-rate movies and are not accepted by the crowd. Though there are good horror or shark movies, more movies of these types are unpleasant to watch. Usually, these movies use these keywords to lure audience to go into the cinema, but the contents of these movies are bad.")
 
 
 
 ######################### prediction ###########################
 st.markdown("# Let's Predict")
-st.write("At the end of this narrative, we provide you a chance to build your own machine learning model, and predict the rating of a movie of your choice! You can choose the features you want to use from all the features we mentioned previously. We will train a xgboost model for you on 90% of the data, and evaluate the model on the rest of the data. So you can know how your model performs! We will also provide you an analysis on which factor contributes the most to the prediction. The factor contributes the most is very likely the factor which affect the movies' rating the most.")
+st.write("At the end of this narrative, we provide you a chance to build your own machine learning model and predict the rating of a movie of your choice! You can choose the features you want to use from all the features we mentioned previously. We will train an xgboost model for you on 90% of the data and evaluate the model on the rest of the data. So you can know how your model performs! We will also provide you an analysis of which factor contributes the most to the prediction. The factor that contributes the most is very likely the factor that affect the movies' rating the most.")
 prediction_df = one_hot_df.drop(['id','release_season','genres','cast','director','spoken_languages','profit','vote_count'],axis=1)
 
 # customized data

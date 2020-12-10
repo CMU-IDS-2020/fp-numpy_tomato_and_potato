@@ -135,7 +135,7 @@ def cast_pair_dictionary(df_casts):
     d = {int(k):int(v) for k,v in d.items()}
     return d
 
-
+@st.cache
 def get_cast_pairs(df_ratings, topNmovie):
     cast_pairs = []
     movie_list = df_ratings[df_ratings['count'] >= 1000].sort_values(by=['score'], ascending = False)['movieId'].to_list()
@@ -145,7 +145,7 @@ def get_cast_pairs(df_ratings, topNmovie):
         cast_pairs.extend(tups)
     return cast_pairs
 
-
+@st.cache
 def get_layout(layout_option, G):
     if layout_option == 'random':
         return nx.random_layout(G)
@@ -167,7 +167,7 @@ def get_cast_pair_counter_edges(df_ratings, topNmovie):
     cast_values = list(cast_counter.values())
     edges = [(cast_keys[i][0], cast_keys[i][1], cast_values[i]) for i in range(len(cast_counter))]
     return cast_pairs, cast_counter, edges
-
+start = time.time()
 st.title("What makes good movies?")
 
 st.write("Everyone loves movies! From time to time, whenever you are happy or sad, movies are one of the best companies for you and me. Sometimes you met good movies that made you cry; other times, you ran into bad movies you couldn't finish. Data scientists like movies too! Based on about 45000 movies' public data, we present this report on analyzing what makes the movies most people like, and we even build a model to predict the rating at the end. Enjoy the report!")
@@ -327,7 +327,7 @@ def draw_hist_fig(selected_genres, genre_rating):
 genre_rating = get_genre_rating(genre_data)
 hist_fig = draw_hist_fig(selected_genres, genre_rating)
 st.plotly_chart(hist_fig, use_container_width=True)
-
+print('hist_fig', time.time() - start)
 st.write("As you can see from the histogram, most of the genres are rated between 6 and 8. However, from this histogram, we can't tell which genres tend to get a higher score. To explore the genre's factors deeper, we plot violin figures to visualize each genre's rating distribution.")
 
 @st.cache
@@ -339,7 +339,7 @@ def draw_violin_fig(selected_genres, genre_rating):
     return violin_fig
 violin_fig = draw_violin_fig(selected_genres, genre_rating)
 st.plotly_chart(violin_fig)
-
+print('violin_fig', time.time() - start)
 st.write("According to the violin plots, drama is the highest-rated genre since its distribution is higher than the distribution of other genres. The median and max score for drama are also the highest.  Another interesting fact is that the Horror movie's rating is the lowest. The Horror movie's median score is 5.4, far less than other genres, and the overall distribution is also lower.")
 
 st.write("All in all, it's obvious that the genre factor truly has an impact on the movie rating, and drama is the highest-rated, while horror movies are the lowest rated.")
@@ -371,7 +371,7 @@ def draw_lang_hist(selected_languages, language_rating):
 
 language_hist_fig = draw_lang_hist(selected_languages, language_rating)
 st.plotly_chart(language_hist_fig, use_container_width=True)
-
+print('language_hist', time.time() - start)
 st.write("In the diagram, we can see that the English language movie has the largest number. However, English movies' distribution is slightly lower than others (left in the Histogram figure). Also, we find that most of the movies are rated between 6.0 and 8.0. This is consistent with the previous genre's result. If you remove the English movies and keep the rest default movies, you can find an interesting phenomenon: the Japanese movies seem to have higher ratings than other movies. To reduce the movie number's factor and pay more attention to the distribution, we also plot the violin figure.")
 
 @st.cache
@@ -407,7 +407,7 @@ def draw_budget_figure(budget_data, imdb_rating):
 
 budget_figure = draw_budget_figure(budget_data, imdb_rating)
 st.plotly_chart(budget_figure)
-
+print('budget_fig', time.time() - start)
 st.write("We first use a scatter plot to visualize the overall distribution. The X-axis is budget, and Y-axis is rating. The figure implies that there exists some relationship between budget and rating. For example, we find that low budget movies distribute from 0.0 to 10.0, which means there are both good movies and some terrible movies with low budget. With the budget increasing, we find that the number of bad movies (with low-rating score) decreases a lot. This finding implies that high budget movies will not be low-rated, at least. To validate my guess, I divide the budget into multiple groups 0~50M dollars, 50M~100M dollars, 100M~200M dollars, >200M dollars. Then, we can see the distribution in the different budget groups.")
 
 @st.cache
@@ -433,7 +433,7 @@ def draw_budget_bucket(budget_data, imdb_rating):
 
 budget_bucket_figure = draw_budget_bucket(budget_data, imdb_rating)
 st.plotly_chart(budget_bucket_figure)
-
+print('budget_bucket_figure', time.time() - start)
 st.write("We use boxplots to visualize the distributions in different budget groups. Based on the figure, it's true that high budget movies' rating distribution is overall higher than the distributions of lower-budget movies. This finding implies that if you pay more, even if you might not get the highest rating, you will not obtain a too bad result. Also, we find that the highest rated movies lie in the 100M~200M group this is consistent with our common sense that medium-budget movies can be highly rated.")
 
 st.write("Hence, we think that the budget will also influence the movie rating.")
@@ -456,7 +456,7 @@ def draw_runtime(runtime_data, imdb_rating):
 
 runtime_figure = draw_runtime(runtime_data, imdb_rating)
 st.plotly_chart(runtime_figure)
-
+print('runtime_figure', time.time() - start)
 st.write("We can conclude that the movies with runtime > 400 are usually highly rated from the runtime scatter plot, which might because these movies are documentaries, and documentaries are often rated high. Also, some short movies with runtime < 50 are also highly rated. These movies might be the micro-movies, which are also invariably highly rated. Overall, we conclude that there exists a trend that the movies with higher runtime might get higher scores. To validate our guessing, we plot some boxplot figures.")
 
 @st.cache
@@ -484,19 +484,15 @@ def draw_runtime_bucket(runtime_data, imdb_rating):
 
 runtime_bucket_figure = draw_runtime_bucket(runtime_data, imdb_rating)
 st.plotly_chart(runtime_bucket_figure)
-
+print('runtime_bucket_figure', time.time() - start)
 st.write("The boxplot figure validates our guess. The movies whose runtime is between 60 and 150 minutes perform the worst, and the micro-movies (with runtime < 60 mins) perform better. From the second group (60~90) to the fifth group (>240 min), the distribution becomes gradually higher.")
 st.write("As a consequence, we can conclude that the runtime also makes some difference in the final rating. Longer movies tend to get higher rating scores, except for too-short movies, which also get high scores.")
 
 
-
-###### PART N
 ###### Cluster graph of the connection between top actors of top movies
 ###### And the Top directors Bar chart
-###### Need: movie_id list to filter the data to display (Top N rated or Top N bestseller ?)
-###### and storytelling
 
-layout_list = ['kamada_kawai', 'circular', 'random', 'multibipartite']
+layout_list = ['kamada_kawai', 'circular', 'random', 'multipartite']
 
 st.markdown('# Directors and actos are making great movies!')
 st.write('An important factor that affects the quality of the movie is the actors. Great movies often come with great casts. We are going to explore the connections between actors in top movies.')
@@ -572,7 +568,7 @@ cast_pairs, cast_counter, edges = get_cast_pair_counter_edges(df_ratings, topNmo
 
 cluster_fig = draw_cluster(cast_pairs, edges, cast_id_map, layout_option)
 st.plotly_chart(cluster_fig)
-
+print('cluster', time.time() - start)
 st.write('In addition, movies\' success also attribute to the director, which is the key role of the whole production.')
 
 st.write('Of the top 10000 movies, we could see that Alfred Hitchcock, known as the "Master of Suspense", stands out for directing 52 of them. We can also see some prestigious name like Woody Allen, Robert Altman ... for making successful films.')
@@ -599,7 +595,7 @@ def draw_director_fig(df_director, directortopNmovie):
 
 director_fig = draw_director_fig(df_director, directortopNmovie)
 st.plotly_chart(director_fig)
-
+print('director', time.time() - start)
 ### Box plot of movie by the top connected actors
 
 @st.cache
@@ -635,11 +631,11 @@ def draw_actor_fig(df_casts, cast_id_map):
     return box_connection_fig
 
 st.write('As for the specific movies for those top connected actors, we could see that their ratings are above average and not that perfect. It indicates that great movies often come with great casts, but the participation of great actors cannot guarantee success.')
-
+print('before draw', time.time() - start)
 box_connection_fig = draw_actor_fig(df_casts, cast_id_map)
-
+print('after draw', time.time() - start)
 st.plotly_chart(box_connection_fig)
-
+print('box_connection', time.time() - start)
 
 ######################## keywords ##################3######
 def tfidf(kwdf, agg_kwdf, n_keyword, n_film):
@@ -728,7 +724,7 @@ fig, ax = plt.subplots(figsize=(20,10))
 ax.imshow(wc, interpolation='bilinear')
 ax.set_axis_off()
 st.pyplot(fig)
-
+print('word_cloud', time.time() - start)
 st.write("From this graph, we can see that \"shark\", \"dinosaur\", \"erotic movie\" are more likely to appear in low-rate movies. Also, there are some other keywords like \"horror\", \"alien invasion\". These keywords are fascinating to the audience at the first place and we are often tempted to watch some of them. However, it is showed these movies are more likely to be low-rate movies and are not accepted by the crowd. Though there are good horror or shark movies, more movies of these types are unpleasant to watch. Usually, these movies use these keywords to lure audience to go into the cinema, but the contents of these movies are bad.")
 
 st.markdown("# Conclusion")
@@ -857,3 +853,4 @@ else:
         dsample = xgboost.DMatrix(sample.values, feature_names=sample.columns)
         output = model.predict(dsample)
         st.write("The estimated rating of this movie is: "+str(round(output[0],2))+" !")
+print('the end', time.time() - start)

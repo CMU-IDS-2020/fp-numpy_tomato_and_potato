@@ -50,17 +50,6 @@ def get_cov_matrix(feature_list_1, feature_list_2):
         cov_matrix.append(curr_list)
     return cov_matrix
 
-def display_cov_heatmap(feature_list_1, feature_list_2, df):
-    cov_mat = get_cov_matrix(feature_list_1, feature_list_2, df)
-    fig = plt.figure()
-    if max(max(cov_mat))==1:
-        ax = sns.heatmap(cov_mat, vmin=(min(min(cov_mat))+1)/2, vmax=-(min(min(cov_mat))+1)/2, linewidths=.5, annot=True, cmap="YlGnBu",
-                         xticklabels=feature_list_2, yticklabels=feature_list_1)
-        st.pyplot(fig)
-    else:
-        ax = sns.heatmap(cov_mat, linewidths=.5, annot=True, cmap="YlGnBu",
-                         xticklabels=feature_list_2, yticklabels=feature_list_1, center=0)
-        st.pyplot(fig)
 
 def pick_feature(dataset, feature_list):
     new_feature=[]

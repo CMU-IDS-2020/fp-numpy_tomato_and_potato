@@ -770,7 +770,7 @@ if show_ml:
     potential_features = ['budget', 'runtime', 'release_year','genre','cast','director','season']
     customized_features = st.multiselect('features', potential_features, default = potential_features)
     if len(customized_features)==0:
-        st.write("Please select at least one feature to start the prediction")
+        st.write("Please select at least one feature to start the prediction.")
     else:
         customized_dataset = pick_feature(prediction_df,customized_features)
         st.write("The following is the importance of each features. The Y axis is the f score of the variable, which is the total number of time the model split on the factor. What factor is the most important one😊?")

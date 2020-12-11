@@ -21,7 +21,8 @@ https://share.streamlit.io/cmu-ids-2020/fp-numpy_tomato_and_potato/main
 
 In this project, we explore a [movie dataset](https://www.kaggle.com/rounakbanik/the-movies-dataset?select=links.csv) which contains information of 45,000 movies listed in the Full MovieLens Dataset. The dataset contains movies released on or before July 2017 and 26 million ratings from over 270,000 users. We examined different factors which may influence the movie ratings using different visulization methods. Besides, we built a prediction model which considers these factors together to predict the rating scores for movies. The factor we explored includes budget, runtime, release year, language, genres, casts and keywords. We organized the report mainly into 3 parts, the correlations between each pair of factors and ratings, deep analysis of each factor and a prediction model. After the whole research, we found there seems no decisive factor for a good movie. A good movie can be resulted from many different factors and the reason behind a good movie is complicated. Besides, a movie's rating can also be affected by more complicated factors like the evolution of aesthetic values over time. These are some aspects we can dig deeper into and study in future works.
 
-### **video** [TODO]
+### **video** 
+https://drive.google.com/file/d/1b7XIJGLc54CP-7kcl3AQPoj9buMwYejl/view?usp=sharing
 
 ### **Running Instructions**
 ```

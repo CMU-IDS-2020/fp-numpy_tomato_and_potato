@@ -674,7 +674,7 @@ def draw_wc_high(keyword_df):
   agg_kwdf = get_agg_kwdf(keyword_df)
   n_keyword = get_n_keyword(keyword_df)
   n_film = get_n_film(keyword_df)
-  low_kwdf = keyword_df[keyword_df['rating'] < 5.0]
+  low_kwdf = keyword_df[keyword_df['rating'] >= 8.0]
   agg_low_kwdf = low_kwdf.groupby('keyword') \
                   .agg(count=('rating', 'size')) \
                   .reset_index()
@@ -686,7 +686,7 @@ def draw_wc_low(keyword_df):
   agg_kwdf = get_agg_kwdf(keyword_df)
   n_keyword = get_n_keyword(keyword_df)
   n_film = get_n_film(keyword_df)
-  high_kwdf = keyword_df[keyword_df['rating'] >= 8.0]
+  high_kwdf = keyword_df[keyword_df['rating'] < 5.0]
   agg_high_kwdf = high_kwdf.groupby('keyword') \
                   .agg(count=('rating', 'size')) \
                   .reset_index()

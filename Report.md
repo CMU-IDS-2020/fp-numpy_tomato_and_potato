@@ -38,10 +38,13 @@ Ploting relations between actors is not straightforward, because it has to compu
 
 ## Results
 
-Key Takeways:
+For the visualization part, we draw a correlation heatmap for all factors. For genres analysis, we draw a histogram graph and a violin graph. For languages analysis, we draw a histogram graph and a violin graph. For budgets analysis, we draw a scatter plot and a box graph. For runtime analysis, we also draw a scatter plot and a box graph. For directors and actors analysis, we draw a cluster graph, a bar graph and a box graph. For keywords, we draw three word cloud graphs.
 
-The visualizations your system produces and any data to help evaluate your approach. For example, you might describe a case study that illustrates how your visualization(s) to address your chosen problem.
+We explored different factors and found it is hard to find a decisive relationship between ratings and other factors. For example, the great directors can direct some terrible movies, and there are also some great movies with very low budget. However, we observed some fun relationships from the analysis process. 
 
+In the correlation analysis, we found that vote count has a high correlation with profit and budget and profit has a correlation with profit. This seems that if we use budget for advertising and make more audience, we can have a higher profit. Besides, it's interesting to find budget has little relationship with rating.
+
+When analysing genres, we found that horror movies are tend to have a lower rating. When analysing languages, we found that malayalam tends to have a higher rating. When analysing runtime, we found that longer movies tend to have a higher rating. When analysing casts, we found that top movies usually have similar directors and actors. When analysing keywords, we found "woman director" is mostly used among all movies. High-rating movies tend to use "concert", "miniseries". Low-rating movies tend to use "shark", "dinosaur", "erotic movie".
 
 ## Discussion
 

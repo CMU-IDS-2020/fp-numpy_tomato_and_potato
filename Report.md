@@ -38,6 +38,7 @@ Ploting relations between actors is not straightforward, because it has to compu
 
 From the analyses above, we notice no strong linear correlations between rating and any factor, but some combinations of elements can be a great indicator of good movies. We believe that the tree-based regression will fit the data better than linear regression models. After discussion, we decide to use XGBoost as our model. To further support our statements about each factor's importance, we also provide readers an analysis of which factor contributes the most to the prediction. The factor that contributes the most is likely the factor that affects the movies' rating the most. The matric we use here is the f-score, which is how many times the XGBoost model split on the factor. Then we will tell the reader how the model preform by applying a k-fold validation. By doing so, the reader will know how well can we predict the rating of the movies given the factors selected. 
 
+
 ## Results
 
 For the visualization part, we draw a correlation heatmap for all factors. For genres analysis, we draw a histogram graph and a violin graph. For languages analysis, we draw a histogram graph and a violin graph. For budgets analysis, we draw a scatter plot and a box graph. For runtime analysis, we also draw a scatter plot and a box graph. For directors and actors analysis, we draw a cluster graph, a bar graph and a box graph. For keywords, we draw three word cloud graphs.

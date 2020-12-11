@@ -42,16 +42,11 @@ For the visualization part, we draw a correlation heatmap for all factors. For g
 
 We explored different factors and found it is hard to find a decisive relationship between ratings and other factors. For example, the great directors can direct some terrible movies, and there are also some great movies with very low budget. However, we observed some fun relationships from the analysis process. 
 
-In the correlation analysis, we found that vote count has a high correlation with profit and budget and profit has a correlation with profit. This seems that if we use budget for advertising and make more audience, we can have a higher profit. Besides, it's interesting to find budget has little relationship with rating.
-
-When analysing genres, we found that horror movies are tend to have a lower rating. When analysing languages, we found that malayalam tends to have a higher rating. When analysing runtime, we found that longer movies tend to have a higher rating. When analysing casts, we found that top movies usually have similar directors and actors. When analysing keywords, we found "woman director" is mostly used among all movies. High-rating movies tend to use "concert", "miniseries". Low-rating movies tend to use "shark", "dinosaur", "erotic movie".
+In the correlation analysis, we found that vote count has a high correlation with profit and budget and profit has a correlation with profit. This seems that if we use budget for advertising and make more audience, we can have a higher profit. Besides, it's interesting to find budget has little relationship with rating. When analysing genres, we found that horror movies are tend to have a lower rating. When analysing languages, we found that malayalam tends to have a higher rating. When analysing runtime, we found that longer movies tend to have a higher rating. When analysing casts, we found that top movies usually have similar directors and actors. When analysing keywords, we found "woman director" is mostly used among all movies. High-rating movies tend to use "concert", "miniseries". Low-rating movies tend to use "shark", "dinosaur", "erotic movie".
 
 ## Discussion
 
-
-What has the audience learned from your work? What new insights or practices has your system enabled? Informal observations of use that help evaluate your system are encouraged.
-
-
+The audience can learn how different factors influence ratings of movies and the correlationship between different factors. They can see what actors acts in top movies and their relatoinships. They can also see what directors directed most many high-rating movies. They can also know what keywords are popular in high-rating movies and low-rating movies. We enable the audience to interact with our website to discorver new relationships by themselves. Besides we build a prediction model, which the audience can interact with to predict a movie's rating.
 ## Future Work
 
 * Streamlit requires computation on every component even when moving the sliders. We could further optimize it for smoother performance.

@@ -494,7 +494,7 @@ st.write("As a consequence, we can conclude that the runtime also makes some dif
 
 layout_list = ['kamada_kawai', 'circular', 'random', 'multipartite']
 
-st.markdown('# Directors and actos are making great movies!')
+st.markdown('# Directors and actors are making great movies!')
 st.write('An important factor that affects the quality of the movie is the actors. Great movies often come with great casts. We are going to explore the connections between actors in top movies.')
 
 st.write('From the top 250 rated movies with more than 1000 voters, we can see some famous actors stand out in the network graph, like Arnold Schwarzenegger, Matt Damon, and Chris Evans.')
@@ -575,7 +575,8 @@ st.write('Of the top 10000 movies, we could see that Alfred Hitchcock, known as 
 
 df_director = load_director_data()
 
-directortopNmovie = st.slider('directors of top N movies', 100, 50000, value=10000)
+#directortopNmovie = st.slider('directors of top N movies', 100, 50000, value=10000)
+directortopNmovie = 10000
 
 ### Top directors
 @st.cache
